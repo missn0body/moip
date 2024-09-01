@@ -23,14 +23,14 @@ constexpr short namebuf = 255;
 constexpr short bufsize = 255;
 
 // ini list functions and structures
-struct inisect
+typedef struct inisect
 {
 	char section[namebuf + 1];
 	char buffer [bufsize + 1];
 
 	struct inisect *prev;
 	struct inisect *next;
-};
+} inisect;
 
 struct inifile
 {
@@ -65,6 +65,7 @@ void inifile_done		(struct inifile *);
 // .ini file manipulation
 void inisect_print		(FILE *, struct inisect *, bool);
 void inifile_print		(FILE *, struct inifile *, bool);
+void inifile_operate		(struct inifile *, void (*functor)(struct inisect *));
 
 #ifdef __cplusplus
 }

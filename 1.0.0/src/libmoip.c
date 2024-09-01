@@ -86,6 +86,7 @@ void inifile_done(struct inifile *obj) { inifile_clear(obj); return; }
 // same with the printing function for .ini files below
 void inisect_print(FILE *output, struct inisect *obj, bool verbose)
 {
+	if(obj == nullptr) return;
 	FILE *out = (output == nullptr) ? stdout : output;
 
 	fprintf(out, "[%s]\n%s\n\n", obj->section, obj->buffer);
@@ -102,6 +103,7 @@ void inisect_print(FILE *output, struct inisect *obj, bool verbose)
 
 void inifile_print(FILE *output, struct inifile *obj, bool verbose)
 {
+	if(obj == nullptr) return;
 	FILE *out = (output == nullptr) ? stdout : output;
 
 	// Printing file information
@@ -115,6 +117,20 @@ void inifile_print(FILE *output, struct inifile *obj, bool verbose)
 	for(i = inifile_begin(obj); i != inifile_end(obj); i = inifile_next(i))
 	{
 		inisect_print(out, i, verbose);
+	}
+
+	return;
+}
+
+// use a user-defined function to operate on all sections of an .ini file
+void inifile_operate(struct inifile *obj, void (*functor)(struct inisect *))
+{
+	if(obj == nullptr || functor == nullptr) return;
+
+	struct inisect *i;
+	for(i = inifile_begin(obj); i != inifile_end(obj); i = inifile_next(i))
+	{
+		functor(i);
 	}
 
 	return;
