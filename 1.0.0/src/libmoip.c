@@ -68,8 +68,8 @@ void inifile_erase(struct inifile *obj, struct inisect *what)
 // Again, "what" is assumed to be a null-terminated string
 void inifile_push_front(struct inifile *obj, const char *name, const char *what) { inifile_insert(obj, inifile_begin(obj), name, what); return; }
 void inifile_push_back(struct inifile *obj, const char *name, const char *what)  { inifile_insert(obj, inifile_end(obj),   name, what); return; }
-void inifile_pop_front(struct inifile *obj)					   { inifile_erase (obj, inifile_begin(obj)); 	    return; }
-void inifile_pop_back(struct inifile *obj)					   { inifile_erase (obj, inifile_end(obj)); 		    return; }
+void inifile_pop_front(struct inifile *obj)					 { inifile_erase (obj, inifile_begin(obj));		return; }
+void inifile_pop_back(struct inifile *obj)					 { inifile_erase (obj, inifile_end(obj));		return; }
 
 void inifile_clear(struct inifile *obj)
 {
@@ -79,3 +79,43 @@ void inifile_clear(struct inifile *obj)
 
 // This acts as a C++ destructor, freeing all memory associated with a file
 void inifile_done(struct inifile *obj) { inifile_clear(obj); return; }
+
+
+// .ini file mainipulation
+// debug information is printed as comments, so that the current file is not mangled,
+// same with the printing function for .ini files below
+void inisect_print(FILE *output, struct inisect *obj, bool verbose)
+{
+	FILE *out = (output == nullptr) ? stdout : output;
+
+	fprintf(out, "[%s]\n%s\n\n", obj->section, obj->buffer);
+
+	// Check if section is properly linked
+	if(verbose)
+	{
+		fprintf(out, "; previous section listed as \"[%s]\"\n", obj->prev->section);
+		fprintf(out, "; next section listed as \"[%s]\"\n\n", 	obj->next->section);
+	}
+
+	return;
+}
+
+void inifile_print(FILE *output, struct inifile *obj, bool verbose)
+{
+	FILE *out = (output == nullptr) ? stdout : output;
+
+	// Printing file information
+	if(verbose)
+	{
+		fprintf(out, "; inifile->name = \"%s\"\n",	   obj->name);
+		fprintf(out, "; inifile->sectcount = %ld\n\n", obj->sectcount);
+	}
+
+	struct inisect *i;
+	for(i = inifile_begin(obj); i != inifile_end(obj); i = inifile_next(i))
+	{
+		inisect_print(out, i, verbose);
+	}
+
+	return;
+}

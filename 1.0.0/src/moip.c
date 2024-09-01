@@ -1,20 +1,18 @@
-#include <stdio.h>
-
 #include "../lib/moip.h"
+
+// TODO divise some sort of key-value pair structure that can be expandable
+// TODO implement functions to search a file for specific keys to check their values
+// TODO have inifile create look-up tables for easy indexing of keys and values
 
 int main(void)
 {
 	struct inifile fileobj;
-	struct inisect *i;
 
 	inifile_init(&fileobj, "testfile");
 	inifile_push_back(&fileobj, "section", "helloworld");
 	inifile_push_back(&fileobj, "section", "helloworld");
 
-	for(i = inifile_begin(&fileobj); i != inifile_end(&fileobj); i = inifile_next(i))
-	{
-		printf("[%s]\n%s\n\n", i->section, i->buffer);
-	}
+	inifile_print(nullptr, &fileobj, true);
 
 	inifile_done(&fileobj);
 	exit(EXIT_SUCCESS);
